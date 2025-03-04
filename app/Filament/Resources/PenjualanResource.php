@@ -14,6 +14,7 @@ use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\PenjualanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -60,31 +61,26 @@ class PenjualanResource extends Resource
             ->columns([
                 TextColumn::make('tanggal')
                     ->dateTime('d F Y')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('pelanggan.nama_pelanggan'),
-                TextColumn::make('total_harga')->money('IDR'),
+                TextColumn::make('pelanggan.nama_pelanggan')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('total_harga')
+                    ->money('IDR')
+                    ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('pelanggan_id')
+                    ->options(\App\Models\Pelanggan::all()->pluck('nama_pelanggan', 'id'))
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
-                    ->form([
-                        DatePicker::make('tanggal'),
-                        Select::make('pelanggan_id')
-                    ->options(
-                        \App\Models\Pelanggan::pluck('nama_pelanggan', 'id')
-                    ),
-                        TextInput::make('nomor_telepon')
-                        ->default(function (callable $get) {
-                            $pelangganId = $get('pelanggan_id'); // Mendapatkan ID pelanggan yang dipilih
-                            if ($pelangganId) {
-                                $pelanggan = \App\Models\Pelanggan::find($pelangganId); // Mengambil pelanggan berdasarkan ID
-                            }
-                            return $pelanggan ? $pelanggan->nomor_telepon : ''; // Mengembalikan nomor telepon pelanggan atau kosong
-                        }),
-                        TextInput::make('total_harga')->default('0'),
-                    ]),
+                    ->url(
+                        fn(Penjualan $record): string =>
+                        route('filament.admin.resources.detailpenjualans.index') .
+                        '?tableFilters[penjualan_id][value]=' . $record->id
+                    )
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

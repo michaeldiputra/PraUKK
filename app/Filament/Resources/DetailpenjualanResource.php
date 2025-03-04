@@ -10,7 +10,9 @@ use App\Models\Detailpenjualan;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\DetailpenjualanResource\Pages;
@@ -18,10 +20,12 @@ use App\Filament\Resources\DetailpenjualanResource\RelationManagers;
 
 class DetailpenjualanResource extends Resource
 {
+    
     protected static bool $shouldRegisterNavigation = false;
     protected static ?string $model = Detailpenjualan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $label = 'Detail Penjualan';
 
     public static function form(Form $form): Form
     {
@@ -80,10 +84,20 @@ class DetailpenjualanResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('produk.nama_produk'),
+                TextColumn::make('jumlah_produk'),
+                TextColumn::make('produk.harga'),
+                TextColumn::make('subtotal'),
+                TextColumn::make('penjualan_id'),
             ])
             ->filters([
-                //
+                SelectFilter::make('penjualan_id')
+                ->label('Pilih Penjualan')
+                ->options(
+                    \App\Models\Penjualan::with('pelanggan')
+                        ->get()
+                        ->pluck('pelanggan.nama_pelanggan', 'id')
+                )
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

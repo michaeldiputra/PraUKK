@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\DetailpenjualanResource\Widgets;
 
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 
 class detailpenjualanWidget extends BaseWidget
 {
@@ -27,7 +29,15 @@ class detailpenjualanWidget extends BaseWidget
                 ->label('Harga')
                 ->money('IDR'),
                 TextColumn::make('subtotal')
-                ->money('IDR'),
+                ->money('IDR')
+                ->summarize(
+                    Summarizer::make()
+                    ->using(function ($query){
+                        return $query->sum(DB::raw('jumlah_produk * subtotal'));
+                    })
+                    ->money('IDR')
+                )
+                ,
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
