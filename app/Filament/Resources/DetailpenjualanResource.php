@@ -66,6 +66,7 @@ class DetailpenjualanResource extends Resource
 
                         $set('subtotal', $harga * $jumlahProduk);
                     })
+                    ->debounce(600)
                     ->required(),
                 TextInput::make('harga')
                     ->prefix('Rp')
