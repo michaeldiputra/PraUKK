@@ -14,6 +14,10 @@ class detailpenjualan extends Model
         return $this->belongsTo(Produk::class);
     }
 
+    public function pelanggan(){
+        return $this->belongsTo(Pelanggan::class);
+    }
+
     protected static function booted(){
         static::created(function($detailpenjualan){
             $produk = Produk::find($detailpenjualan->produk_id);

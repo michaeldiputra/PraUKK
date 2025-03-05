@@ -3,14 +3,17 @@
 namespace App\Filament\Resources\DetailpenjualanResource\Widgets;
 
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 
 class detailpenjualanWidget extends BaseWidget
 {
     public $penjualanId;
-    public function mount($record){
+    public function mount($record)
+    {
         $this->penjualanId = $record;
     }
     public function table(Table $table): Table
@@ -21,13 +24,21 @@ class detailpenjualanWidget extends BaseWidget
             )
             ->columns([
                 TextColumn::make('produk.nama_produk')
-                ->label('Nama Produk'),
+                    ->label('Nama Produk'),
                 TextColumn::make('jumlah_produk'),
                 TextColumn::make('produk.harga')
-                ->label('Harga')
-                ->money('IDR'),
+                    ->label('Harga')
+                    ->money('IDR'),
                 TextColumn::make('subtotal')
-                ->money('IDR'),
+                    ->money('IDR')
+                    ->summarize(
+                        Summarizer::make()
+                            ->using(function ($query) {
+                                return $query->sum(DB::raw('subtotal'));
+                            })
+                            ->money('IDR')
+                    )
+                ,
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
