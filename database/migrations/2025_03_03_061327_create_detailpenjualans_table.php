@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('penjualan_id')->constrained('penjualans')->cascadeOnDelete();
             $table->foreignId('produk_id')->constrained('produks')->restrictOnDelete(); 
             $table->integer('jumlah_produk');
-            $table->decimal('subtotal');
+            $table->decimal('subtotal', 10, 2);
             $table->timestamps();
         });
     }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('tanggal');
             $table->decimal('total_harga',10, 2);
-            $table->foreignId('pelanggan_id')->constrained('pelanggans');
+            $table->foreignId('pelanggan_id')->constrained('pelanggans')->cascadeOnDelete();
             $table->timestamps();
         });
     }
